@@ -1,0 +1,38 @@
+# ─── 기본: 텍스트 파일 줄바꿈을 LF로 정규화 ─────────────────────────────────
+* text=auto eol=lf
+
+# ─── 소스코드 ────────────────────────────────────────────────────────────────
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.md    text eol=lf
+*.toml  text eol=lf
+*.rs    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+
+# ─── Windows 실행파일은 CRLF 유지 ────────────────────────────────────────────
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# ─── 바이너리 (줄바꿈 변환 안 함) ────────────────────────────────────────────
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.icns  binary
+*.webp  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.zip   binary
+*.exe   binary
+*.msi   binary
+*.dmg   binary
