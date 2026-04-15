@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
-import { useSceneStore } from "@/stores/scene-store";
+import { useSceneStore, type Scene } from "@/stores/scene-store";
 import SceneCard from "@/components/scene/SceneCard";
 import PresetManager from "@/components/scene/PresetManager";
 import { PlusIcon } from "@/components/ui/icons";
@@ -28,9 +29,18 @@ export default function SceneMode() {
   const { t } = useTranslation();
   const { scenes, batchProgress, isRunning, addScene, reorderScenes, startBatch, stopBatch } =
     useSceneStore();
+  const [previewScene, setPreviewScene] = useState<Scene | null>(null);
 
   const enabledCount = scenes.filter((s) => s.enabled).length;
   const totalImages = scenes.filter((s) => s.enabled).reduce((sum, s) => sum + s.count, 0);
+
+  // ESC로 미리보기 닫기
+  useEffect(() => {
+    if (!previewScene) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setPreviewScene(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [previewScene]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -128,13 +138,48 @@ export default function SceneMode() {
                 )}
               >
                 {scenes.map((scene) => (
-                  <SceneCard key={scene.id} scene={scene} />
+                  <SceneCard key={scene.id} scene={scene} onPreview={setPreviewScene} />
                 ))}
               </div>
             </SortableContext>
           </DndContext>
         )}
       </div>
+
+      {/* 씬 이미지 미리보기 모달 — DnD/overflow 컨텍스트 완전 분리 */}
+      {previewScene?.lastResultBase64 && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.88)" }}
+          onClick={() => setPreviewScene(null)}
+        >
+          <div
+            className="relative"
+            style={{ maxWidth: "90vw", maxHeight: "90vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={`data:image/png;base64,${previewScene.lastResultBase64}`}
+              alt={previewScene.name}
+              style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: "12px", objectFit: "contain", display: "block" }}
+              data-allow-context-menu
+            />
+            <div
+              className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-2"
+              style={{ background: "rgba(0,0,0,0.65)", borderRadius: "0 0 12px 12px" }}
+            >
+              <span className="text-sm font-medium text-white/90">{previewScene.name}</span>
+              <button
+                type="button"
+                onClick={() => setPreviewScene(null)}
+                className="text-xs text-white/60 hover:text-white transition-colors px-2 py-1"
+              >
+                닫기 (ESC)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
