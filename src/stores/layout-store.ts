@@ -1,28 +1,26 @@
 import { create } from "zustand";
-
-type RightPanelContent = "generation" | "character" | "preset" | null;
+import { persist } from "zustand/middleware";
 
 interface LayoutState {
+  leftPanelOpen: boolean;
   rightPanelOpen: boolean;
-  rightPanelContent: RightPanelContent;
-  toggleRightPanel: (content: RightPanelContent) => void;
-  closeRightPanel: () => void;
+  toggleLeftPanel: () => void;
+  toggleRightPanel: () => void;
+  setLeftPanel: (open: boolean) => void;
+  setRightPanel: (open: boolean) => void;
 }
 
-export const useLayoutStore = create<LayoutState>((set, get) => ({
-  rightPanelOpen: false,
-  rightPanelContent: null,
+export const useLayoutStore = create<LayoutState>()(
+  persist(
+    (set) => ({
+      leftPanelOpen: true,
+      rightPanelOpen: true,
 
-  toggleRightPanel: (content) => {
-    const { rightPanelOpen, rightPanelContent } = get();
-    if (rightPanelOpen && rightPanelContent === content) {
-      set({ rightPanelOpen: false, rightPanelContent: null });
-    } else {
-      set({ rightPanelOpen: true, rightPanelContent: content });
-    }
-  },
-
-  closeRightPanel: () => {
-    set({ rightPanelOpen: false, rightPanelContent: null });
-  },
-}));
+      toggleLeftPanel: () => set((s) => ({ leftPanelOpen: !s.leftPanelOpen })),
+      toggleRightPanel: () => set((s) => ({ rightPanelOpen: !s.rightPanelOpen })),
+      setLeftPanel: (open) => set({ leftPanelOpen: open }),
+      setRightPanel: (open) => set({ rightPanelOpen: open }),
+    }),
+    { name: "genai-layout" }
+  )
+);
