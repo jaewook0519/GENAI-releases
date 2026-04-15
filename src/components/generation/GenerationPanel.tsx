@@ -7,25 +7,10 @@ import { cn } from "@/lib/cn";
 import { useSettingsStore, RESOLUTION_PRESETS, MODEL_LABELS, SAMPLER_LABELS, NOISE_SCHEDULES } from "@/stores/settings-store";
 import { useGenerationStore } from "@/stores/generation-store";
 import FragmentPicker from "@/components/prompt/FragmentPicker";
+import { ChevronDownIcon, CheckIcon, SpinnerIcon } from "@/components/ui/icons";
 import type { NovelAIModel, Sampler } from "@/services/novelai-api";
 
 // ─── 아이콘 ───────────────────────────────────────────────────────────────────
-
-function ChevronDownIcon({ size = 12 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
 
 function DiceIcon() {
   return (
@@ -36,14 +21,6 @@ function DiceIcon() {
       <circle cx="16" cy="8" r="1.2" fill="currentColor" />
       <circle cx="8" cy="16" r="1.2" fill="currentColor" />
       <circle cx="12" cy="12" r="1.2" fill="currentColor" />
-    </svg>
-  );
-}
-
-function SpinnerIcon() {
-  return (
-    <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M21 12a9 9 0 11-6.219-8.56" />
     </svg>
   );
 }

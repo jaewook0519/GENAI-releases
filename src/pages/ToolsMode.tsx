@@ -6,26 +6,9 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { useLibraryStore } from "@/stores/library-store";
 import { runImg2Img, runInpaint, runUpscale, runRemoveBackground, applyMosaic } from "@/services/smart-tools";
 import CanvasMaskEditor from "@/components/tools/CanvasMaskEditor";
-
-// ─── 아이콘 ───────────────────────────────────────────────────────────────────
-
-function UploadIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" y1="3" x2="12" y2="15" />
-    </svg>
-  );
-}
-
-function SpinnerIcon() {
-  return (
-    <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M21 12a9 9 0 11-6.219-8.56" />
-    </svg>
-  );
-}
+import ImageDropZone from "@/components/tools/ImageDropZone";
+import ResultPanel from "@/components/tools/ResultPanel";
+import { SpinnerIcon } from "@/components/ui/icons";
 
 // ─── 탭 정의 ─────────────────────────────────────────────────────────────────
 
@@ -37,130 +20,6 @@ const TOOLS: { id: ToolType; label: string }[] = [
   { id: "mosaic", label: "모자이크" },
   { id: "taganalysis", label: "태그 분석" },
 ];
-
-// ─── 이미지 업로드 영역 ───────────────────────────────────────────────────────
-
-interface ImageDropZoneProps {
-  base64: string | null;
-  onLoad: (base64: string) => void;
-  label?: string;
-}
-
-function ImageDropZone({ base64, onLoad, label = "이미지 업로드" }: ImageDropZoneProps) {
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      // strip data URL prefix
-      const b64 = result.replace(/^data:[^;]+;base64,/, "");
-      onLoad(b64);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file?.type.startsWith("image/")) handleFile(file);
-  };
-
-  return (
-    <div
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
-      onClick={() => fileRef.current?.click()}
-      className={cn(
-        "relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors",
-        "border-border hover:border-primary/50 hover:bg-secondary/50",
-        base64 ? "aspect-square" : "aspect-square"
-      )}
-    >
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
-        }}
-      />
-      {base64 ? (
-        <img
-          src={`data:image/png;base64,${base64}`}
-          alt="입력 이미지"
-          className="h-full w-full rounded-lg object-contain"
-          draggable={false}
-        />
-      ) : (
-        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-          <UploadIcon />
-          <span className="text-xs">{label}</span>
-          <span className="text-[10px] opacity-60">클릭 또는 드래그</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── 결과 이미지 뷰 ──────────────────────────────────────────────────────────
-
-interface ResultPanelProps {
-  base64: string | null;
-  isProcessing: boolean;
-  error: string | null;
-  onSaveToLibrary: () => void;
-  tool: ToolType;
-}
-
-function ResultPanel({ base64, isProcessing, error, onSaveToLibrary }: ResultPanelProps) {
-  const handleDownload = () => {
-    if (!base64) return;
-    const a = document.createElement("a");
-    a.href = `data:image/png;base64,${base64}`;
-    a.download = `genai_${Date.now()}.png`;
-    a.click();
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div className={cn(
-        "flex aspect-square items-center justify-center rounded-lg border border-border bg-secondary/30",
-        "overflow-hidden"
-      )}>
-        {isProcessing ? (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <SpinnerIcon />
-            <span className="text-xs">처리 중...</span>
-          </div>
-        ) : error ? (
-          <div className="p-4 text-center text-xs text-destructive">{error}</div>
-        ) : base64 ? (
-          <img
-            src={`data:image/png;base64,${base64}`}
-            alt="결과"
-            className="h-full w-full object-contain"
-            draggable={false}
-          />
-        ) : (
-          <span className="text-xs text-muted-foreground">결과가 여기 표시됩니다</span>
-        )}
-      </div>
-      {base64 && !isProcessing && (
-        <div className="flex gap-2">
-          <Button size="sm" className="flex-1" onClick={onSaveToLibrary}>
-            라이브러리 저장
-          </Button>
-          <Button size="sm" variant="outline" className="flex-1" onClick={handleDownload}>
-            다운로드
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── Img2Img 도구 ─────────────────────────────────────────────────────────────
 
@@ -226,7 +85,6 @@ function Img2ImgTool() {
 
   return (
     <div className="flex gap-4">
-      {/* 좌: 입력 */}
       <div className="flex w-64 shrink-0 flex-col gap-3">
         <ImageDropZone base64={inputBase64} onLoad={setInputBase64} label="원본 이미지" />
         <div className="flex flex-col gap-1">
@@ -251,16 +109,8 @@ function Img2ImgTool() {
           {isProcessing ? <><SpinnerIcon /> 처리 중...</> : "실행"}
         </Button>
       </div>
-
-      {/* 우: 결과 */}
       <div className="flex-1">
-        <ResultPanel
-          base64={outputBase64}
-          isProcessing={isProcessing}
-          error={error}
-          onSaveToLibrary={handleSaveToLibrary}
-          tool="img2img"
-        />
+        <ResultPanel base64={outputBase64} isProcessing={isProcessing} error={error} onSaveToLibrary={handleSaveToLibrary} tool="img2img" />
       </div>
     </div>
   );
@@ -339,13 +189,7 @@ function UpscaleTool() {
         </Button>
       </div>
       <div className="flex-1">
-        <ResultPanel
-          base64={outputBase64}
-          isProcessing={isProcessing}
-          error={error}
-          onSaveToLibrary={handleSaveToLibrary}
-          tool="upscale"
-        />
+        <ResultPanel base64={outputBase64} isProcessing={isProcessing} error={error} onSaveToLibrary={handleSaveToLibrary} tool="upscale" />
       </div>
     </div>
   );
@@ -407,13 +251,7 @@ function BgRemoveTool() {
         </Button>
       </div>
       <div className="flex-1">
-        <ResultPanel
-          base64={outputBase64}
-          isProcessing={isProcessing}
-          error={error}
-          onSaveToLibrary={handleSaveToLibrary}
-          tool="bgremove"
-        />
+        <ResultPanel base64={outputBase64} isProcessing={isProcessing} error={error} onSaveToLibrary={handleSaveToLibrary} tool="bgremove" />
       </div>
     </div>
   );
@@ -510,24 +348,14 @@ function InpaintTool() {
               이미지 변경
             </button>
           )}
-          <Button
-            onClick={handleRun}
-            disabled={!inputBase64 || !maskBase64 || isProcessing}
-            size="sm"
-          >
+          <Button onClick={handleRun} disabled={!inputBase64 || !maskBase64 || isProcessing} size="sm">
             {isProcessing ? "처리 중..." : "인페인팅"}
           </Button>
         </div>
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
       <div className="w-64 shrink-0">
-        <ResultPanel
-          base64={outputBase64}
-          isProcessing={isProcessing}
-          error={null}
-          onSaveToLibrary={handleSaveToLibrary}
-          tool="inpaint"
-        />
+        <ResultPanel base64={outputBase64} isProcessing={isProcessing} error={null} onSaveToLibrary={handleSaveToLibrary} tool="inpaint" />
       </div>
     </div>
   );
@@ -549,7 +377,6 @@ function MosaicTool() {
     setProcessing(true);
     setError(null);
     try {
-      // 마스크 캔버스 생성
       const mCanvas = document.createElement("canvas");
       const mCtx = mCanvas.getContext("2d");
       if (!mCtx) throw new Error("Canvas 초기화 실패");
@@ -559,13 +386,11 @@ function MosaicTool() {
         mCanvas.width = img.width;
         mCanvas.height = img.height;
 
-        // 마스크 이미지 그리기
         if (maskBase64) {
           const maskImg = new Image();
           maskImg.onload = () => {
             mCtx.drawImage(maskImg, 0, 0, img.width, img.height);
 
-            // 소스 캔버스
             const srcCanvas = document.createElement("canvas");
             srcCanvas.width = img.width;
             srcCanvas.height = img.height;
@@ -642,13 +467,7 @@ function MosaicTool() {
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
       <div className="w-64 shrink-0">
-        <ResultPanel
-          base64={outputBase64}
-          isProcessing={isProcessing}
-          error={null}
-          onSaveToLibrary={handleSaveToLibrary}
-          tool="mosaic"
-        />
+        <ResultPanel base64={outputBase64} isProcessing={isProcessing} error={null} onSaveToLibrary={handleSaveToLibrary} tool="mosaic" />
       </div>
     </div>
   );

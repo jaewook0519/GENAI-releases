@@ -1,22 +1,7 @@
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
 import { useLLMRPStore } from "@/stores/llm-rp-store";
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" />
-    </svg>
-  );
-}
+import { CheckIcon, TrashIcon } from "@/components/ui/icons";
 
 export default function PersonaList() {
   const { personas, activePersonaId, addPersona, updatePersona, deletePersona, setActivePersona } =

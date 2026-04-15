@@ -4,6 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import * as Switch from "@radix-ui/react-switch";
 import { cn } from "@/lib/cn";
 import { useSceneStore, type Scene } from "@/stores/scene-store";
+import { TrashIcon } from "@/components/ui/icons";
 
 function GripIcon() {
   return (
@@ -11,14 +12,6 @@ function GripIcon() {
       <circle cx="9" cy="5" r="1" fill="currentColor" /><circle cx="15" cy="5" r="1" fill="currentColor" />
       <circle cx="9" cy="12" r="1" fill="currentColor" /><circle cx="15" cy="12" r="1" fill="currentColor" />
       <circle cx="9" cy="19" r="1" fill="currentColor" /><circle cx="15" cy="19" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" />
     </svg>
   );
 }

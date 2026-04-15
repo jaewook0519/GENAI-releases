@@ -1,20 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { useFragmentStore } from "@/stores/fragment-store";
+import { PlusIcon } from "@/components/ui/icons";
 
 function TagIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
       <line x1="7" y1="7" x2="7.01" y2="7" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
 }
@@ -135,7 +128,7 @@ export default function FragmentPicker({ onInsert }: Props) {
                   onClick={() => setAddMode(true)}
                   className="flex w-full items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <PlusIcon /> 새 Fragment 추가
+                  <PlusIcon size={12} /> 새 Fragment 추가
                 </button>
               </div>
             </>

@@ -1,15 +1,6 @@
 import { useLibraryStore } from "@/stores/library-store";
 import { cn } from "@/lib/cn";
-
-function TrashIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  );
-}
+import { TrashIcon } from "@/components/ui/icons";
 
 export default function ImageGrid() {
   const { images, selectedId, selectImage, deleteImage, clearAll } = useLibraryStore();
@@ -76,7 +67,7 @@ export default function ImageGrid() {
                   className="rounded bg-black/60 p-1 text-white hover:bg-destructive transition-colors"
                   title="삭제"
                 >
-                  <TrashIcon />
+                  <TrashIcon size={12} />
                 </button>
                 <span className="rounded bg-black/60 px-1 py-0.5 text-[10px] text-white">
                   {img.params.width}×{img.params.height}
