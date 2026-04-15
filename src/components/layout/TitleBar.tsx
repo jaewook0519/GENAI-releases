@@ -4,23 +4,29 @@ export default function TitleBar() {
   const appWindow = getCurrentWindow();
 
   return (
-    <div
-      data-tauri-drag-region
-      className="flex h-9 w-full items-center justify-between bg-card px-3 select-none"
-    >
-      {/* 앱 타이틀 */}
+    <div className="relative flex h-9 w-full shrink-0 items-center bg-card select-none">
+      {/* 드래그 영역 — 버튼 영역 제외한 중간 공간을 절대 위치로 채움 */}
+      <div
+        data-tauri-drag-region
+        className="absolute inset-0 z-0"
+      />
+
+      {/* 앱 타이틀 (드래그 가능, 포인터 이벤트 없음) */}
       <span
         data-tauri-drag-region
-        className="text-sm font-semibold text-foreground/70"
+        className="relative z-10 pl-3 text-sm font-semibold text-foreground/70 pointer-events-none"
       >
         GENAI
       </span>
 
-      {/* 윈도우 컨트롤 버튼 */}
-      <div className="flex items-center gap-1">
+      {/* 스페이서 */}
+      <div data-tauri-drag-region className="relative z-10 flex-1" />
+
+      {/* 윈도우 컨트롤 버튼 — z-10으로 드래그 영역 위에 배치 */}
+      <div className="relative z-10 flex items-center gap-0.5 pr-1">
         <button
           onClick={() => appWindow.minimize()}
-          className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          className="flex h-9 w-11 items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           title="최소화"
         >
           <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor">
@@ -29,7 +35,7 @@ export default function TitleBar() {
         </button>
         <button
           onClick={() => appWindow.toggleMaximize()}
-          className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          className="flex h-9 w-11 items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           title="최대화"
         >
           <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1">
@@ -38,7 +44,7 @@ export default function TitleBar() {
         </button>
         <button
           onClick={() => appWindow.close()}
-          className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          className="flex h-9 w-11 items-center justify-center text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
           title="닫기"
         >
           <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.2">

@@ -271,7 +271,7 @@ export default function GenerationPanel() {
           ref={promptRef}
           value={settings.prompt}
           onChange={(e) => settings.update({ prompt: e.target.value })}
-          placeholder="1girl, masterpiece, best quality..."
+          placeholder=""
           rows={5}
           className={cn(
             "w-full resize-none rounded-md border border-border bg-secondary",

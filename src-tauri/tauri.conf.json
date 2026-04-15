@@ -16,6 +16,8 @@
         "width": 1600,
         "height": 900,
         "resizable": true,
+        "minWidth": 900,
+        "minHeight": 600,
         "fullscreen": false,
         "decorations": false,
         "dragDropEnabled": false

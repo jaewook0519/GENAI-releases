@@ -60,7 +60,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       model: "nai-diffusion-4-5",
       prompt: "",
-      negativePrompt: DEFAULT_NEGATIVE_PROMPT,
+      negativePrompt: "",
       width: 832,
       height: 1216,
       steps: 28,
@@ -73,6 +73,17 @@ export const useSettingsStore = create<SettingsState>()(
       smeaDyn: false,
       update: (patch) => set((s) => ({ ...s, ...patch })),
     }),
-    { name: "genai-settings" }
+    {
+      name: "genai-settings",
+      version: 2,
+      migrate: (persisted, version) => {
+        const state = persisted as Partial<GenerationSettings>;
+        // v1 → v2: clear the pre-filled DEFAULT_NEGATIVE_PROMPT
+        if (version < 2 && state.negativePrompt === DEFAULT_NEGATIVE_PROMPT) {
+          state.negativePrompt = "";
+        }
+        return state;
+      },
+    }
   )
 );
