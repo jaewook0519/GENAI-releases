@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -176,32 +177,34 @@ export default function SceneCard({ scene }: Props) {
         </div>
       </div>
 
-      {/* 이미지 미리보기 모달 */}
-      {previewOpen && scene.lastResultBase64 && (
+      {/* 이미지 미리보기 모달 — document.body에 포탈로 렌더링하여 stacking context 이슈 방지 */}
+      {previewOpen && scene.lastResultBase64 && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)" }}
           onClick={() => setPreviewOpen(false)}
         >
-          <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+          <div style={{ position: "relative", maxHeight: "90vh", maxWidth: "90vw" }} onClick={(e) => e.stopPropagation()}>
             <img
               src={`data:image/png;base64,${scene.lastResultBase64}`}
               alt={scene.name}
-              className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl select-none"
+              style={{ maxHeight: "90vh", maxWidth: "90vw", borderRadius: "12px", objectFit: "contain", display: "block" }}
               data-allow-context-menu
             />
-            {/* 씬 이름 + 닫기 */}
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between rounded-b-xl bg-black/60 px-4 py-2 backdrop-blur-sm">
-              <span className="text-sm font-medium text-white/90">{scene.name}</span>
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "0 0 12px 12px", background: "rgba(0,0,0,0.65)", padding: "8px 16px" }}>
+              <span style={{ fontSize: "14px", fontWeight: 500, color: "rgba(255,255,255,0.9)" }}>{scene.name}</span>
               <button
                 type="button"
                 onClick={() => setPreviewOpen(false)}
-                className="text-xs text-white/60 hover:text-white transition-colors"
+                style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
               >
                 닫기 (ESC)
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

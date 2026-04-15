@@ -32,10 +32,15 @@ export default function FragmentPicker({ onInsert }: Props) {
   const calcPosition = useCallback(() => {
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
-    setDropStyle({
-      bottom: window.innerHeight - rect.top + 4,
-      left: rect.left,
-    });
+    const DROPDOWN_MAX_H = 320;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow >= DROPDOWN_MAX_H || spaceBelow >= rect.top) {
+      // 아래로 열기
+      setDropStyle({ top: rect.bottom + 4, left: rect.left });
+    } else {
+      // 위로 열기
+      setDropStyle({ bottom: window.innerHeight - rect.top + 4, left: rect.left });
+    }
   }, []);
 
   useEffect(() => {
