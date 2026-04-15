@@ -19,7 +19,9 @@ export interface GenerationSettings {
 }
 
 interface SettingsState extends GenerationSettings {
+  geminiApiKey: string;
   update: (patch: Partial<GenerationSettings>) => void;
+  setGeminiApiKey: (key: string) => void;
 }
 
 export const DEFAULT_NEGATIVE_PROMPT =
@@ -71,7 +73,9 @@ export const useSettingsStore = create<SettingsState>()(
       qualityToggle: true,
       smea: false,
       smeaDyn: false,
+      geminiApiKey: "",
       update: (patch) => set((s) => ({ ...s, ...patch })),
+      setGeminiApiKey: (key) => set({ geminiApiKey: key }),
     }),
     {
       name: "genai-settings",

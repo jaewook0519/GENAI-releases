@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import { useFragmentStore } from "@/stores/fragment-store";
 import { PlusIcon } from "@/components/ui/icons";
@@ -20,24 +21,44 @@ interface Props {
 export default function FragmentPicker({ onInsert }: Props) {
   const { fragments, addFragment, deleteFragment } = useFragmentStore();
   const [open, setOpen] = useState(false);
+  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({});
   const [search, setSearch] = useState("");
   const [newName, setNewName] = useState("");
   const [newContent, setNewContent] = useState("");
   const [addMode, setAddMode] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
-  // 바깥 클릭 시 닫기
+  const calcPosition = useCallback(() => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    setDropStyle({
+      bottom: window.innerHeight - rect.top + 4,
+      left: rect.left,
+    });
+  }, []);
+
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+    calcPosition();
+    const onScroll = () => calcPosition();
+    const onResize = () => calcPosition();
+    const onMouseDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (!buttonRef.current?.contains(target) && !dropRef.current?.contains(target)) {
         setOpen(false);
         setAddMode(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+    document.addEventListener("mousedown", onMouseDown);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [open, calcPosition]);
 
   const filtered = fragments.filter(
     (f) =>
@@ -54,8 +75,9 @@ export default function FragmentPicker({ onInsert }: Props) {
   };
 
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
@@ -69,8 +91,12 @@ export default function FragmentPicker({ onInsert }: Props) {
         <span>Fragment</span>
       </button>
 
-      {open && (
-        <div className="absolute bottom-full left-0 mb-1 z-50 w-64 rounded-lg border border-border bg-popover shadow-xl">
+      {open && createPortal(
+        <div
+          ref={dropRef}
+          style={dropStyle}
+          className="fixed z-[9999] w-64 rounded-lg border border-border bg-popover shadow-xl"
+        >
           {!addMode ? (
             <>
               {/* 검색 */}
@@ -167,7 +193,8 @@ export default function FragmentPicker({ onInsert }: Props) {
               </div>
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

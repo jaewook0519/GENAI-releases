@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useLibraryStore } from "@/stores/library-store";
 import { useGenerationStore } from "@/stores/generation-store";
 import { cn } from "@/lib/cn";
@@ -29,6 +30,7 @@ function CopyIcon() {
 }
 
 export default function HistoryPanel() {
+  const navigate = useNavigate();
   const { images, selectedId, selectImage } = useLibraryStore();
   const { generate } = useGenerationStore();
   const recent = images.slice(0, 30);
@@ -86,7 +88,7 @@ export default function HistoryPanel() {
             {recent.map((img) => (
               <div
                 key={img.id}
-                onClick={() => selectImage(img.id)}
+                onClick={() => { selectImage(img.id); navigate("/library"); }}
                 className={cn(
                   "group relative cursor-pointer overflow-hidden rounded-lg border transition-all duration-150",
                   selectedId === img.id

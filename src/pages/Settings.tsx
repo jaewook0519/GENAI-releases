@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 import * as Switch from "@radix-ui/react-switch";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/cn";
@@ -46,6 +48,13 @@ export default function Settings() {
   const { token, setToken, clearToken } = useAuthStore();
   const { theme, setTheme } = useThemeStore();
   const settings = useSettingsStore();
+  const [appVersion, setAppVersion] = useState("...");
+
+  useEffect(() => {
+    getVersion()
+      .then(setAppVersion)
+      .catch(() => setAppVersion("0.1.1"));
+  }, []);
 
   const handleTokenChange = (value: string) => {
     if (value.trim()) setToken(value.trim());
@@ -76,10 +85,12 @@ export default function Settings() {
           </FieldRow>
           <FieldRow
             label="Gemini API 키"
-            description="LLM RP 탭의 AI 초안 생성에 사용됩니다."
+            description="태그 분석 도구에 사용됩니다. 설정 후 즉시 저장됩니다."
           >
             <input
               type="password"
+              defaultValue={settings.geminiApiKey}
+              onBlur={(e) => settings.setGeminiApiKey(e.target.value.trim())}
               placeholder="AIza..."
               className={cn(inputClass, "w-64")}
             />
@@ -181,7 +192,7 @@ export default function Settings() {
         <section>
           <SectionTitle>앱 정보</SectionTitle>
           <FieldRow label="버전">
-            <span className="text-xs text-muted-foreground">0.1.0</span>
+            <span className="text-xs text-muted-foreground">{appVersion}</span>
           </FieldRow>
         </section>
       </div>
