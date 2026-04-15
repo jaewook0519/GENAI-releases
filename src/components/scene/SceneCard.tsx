@@ -90,10 +90,15 @@ export default function SceneCard({ scene }: Props) {
           onClick={(e) => e.stopPropagation()}
         />
 
-        {/* 프롬프트 미리보기 */}
-        <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">
-          {scene.prompt || "(프롬프트 없음)"}
-        </p>
+        {/* 프롬프트 직접 편집 */}
+        <textarea
+          value={scene.prompt}
+          onChange={(e) => updateScene(scene.id, { prompt: e.target.value })}
+          onClick={(e) => e.stopPropagation()}
+          rows={3}
+          placeholder="프롬프트 (비우면 전역 사용)"
+          className="w-full resize-none rounded border border-border bg-secondary px-2 py-1.5 text-[10px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-ring leading-relaxed"
+        />
 
         {/* 컨트롤 */}
         <div className="flex items-center justify-between">

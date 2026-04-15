@@ -113,9 +113,9 @@ function SimpleSelect({ value, onValueChange, items, className }: SimpleSelectPr
     <Select.Root value={value} onValueChange={onValueChange}>
       <Select.Trigger
         className={cn(
-          "flex h-8 w-full items-center justify-between rounded-lg border border-white/8",
-          "bg-white/4 px-2.5 text-xs text-foreground",
-          "hover:bg-white/7 focus:outline-none focus:ring-1 focus:ring-ring/50",
+          "flex h-8 w-full items-center justify-between rounded-lg border border-border",
+          "bg-secondary px-2.5 text-xs text-foreground",
+          "hover:bg-muted focus:outline-none focus:ring-1 focus:ring-ring",
           "transition-colors",
           className
         )}
@@ -127,7 +127,7 @@ function SimpleSelect({ value, onValueChange, items, className }: SimpleSelectPr
       </Select.Trigger>
       <Select.Portal>
         <Select.Content
-          className="z-50 min-w-[200px] overflow-hidden rounded-xl border border-white/10 bg-popover/95 shadow-xl backdrop-blur-xl"
+          className="z-50 min-w-[200px] overflow-hidden rounded-xl border border-border bg-popover shadow-xl"
           position="popper"
           sideOffset={4}
         >
@@ -139,7 +139,7 @@ function SimpleSelect({ value, onValueChange, items, className }: SimpleSelectPr
                 className={cn(
                   "relative flex cursor-pointer select-none items-center rounded-lg px-7 py-1.5 text-xs",
                   "text-foreground outline-none",
-                  "hover:bg-white/8 data-[highlighted]:bg-white/8"
+                  "hover:bg-accent data-[highlighted]:bg-accent"
                 )}
               >
                 <Select.ItemIndicator className="absolute left-2 flex items-center">
@@ -178,7 +178,7 @@ function SliderRow({ label, value, min, max, step, onChange }: {
       <input
         type="number" value={value} min={min} max={max} step={step}
         onChange={(e) => { const v = Number(e.target.value); if (!isNaN(v) && v >= min && v <= max) onChange(v); }}
-        className="h-7 w-11 rounded-lg border border-white/8 bg-white/4 px-1 text-center text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-ring/50"
+        className="h-7 w-11 rounded-lg border border-border bg-secondary px-1 text-center text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
       />
     </div>
   );
@@ -246,9 +246,9 @@ export default function GenerationPanel() {
   });
 
   const textareaClass = cn(
-    "w-full resize-none rounded-lg border border-white/8 bg-white/4",
+    "w-full resize-none rounded-lg border border-border bg-secondary",
     "px-2.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/40",
-    "focus:outline-none focus:ring-1 focus:ring-ring/50 transition-colors"
+    "focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
   );
 
   return (
@@ -347,12 +347,12 @@ export default function GenerationPanel() {
             placeholder={t("generation.randomSeed")}
             min={0} max={4294967295}
             onChange={(e) => settings.update({ seed: e.target.value === "" ? null : Number(e.target.value) })}
-            className="h-8 flex-1 rounded-lg border border-white/8 bg-white/4 px-2.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-ring/50"
+            className="h-8 flex-1 rounded-lg border border-border bg-secondary px-2.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-ring"
           />
           <button
             onClick={() => settings.update({ seed: null })}
             title={t("generation.randomSeed")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/8 bg-white/4 text-muted-foreground hover:bg-white/8 hover:text-foreground transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <DiceIcon />
           </button>
